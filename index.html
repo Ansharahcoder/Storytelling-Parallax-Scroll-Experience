@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON CHRONICLE: The Last Signal - Interactive Comic Experience</title>
+
+    <!-- Google Fonts for Comic Book Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bungee+Inline&family=Montserrat:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        bangers: ['Bangers', 'cursive'],
+                        bungee: ['"Bungee Inline"', 'cursive'],
+                        marker: ['"Permanent Marker"', 'cursive'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            pink: '#ff007f',
+                            cyan: '#00f0ff',
+                            yellow: '#ffe600',
+                            dark: '#0a0a12',
+                            card: '#121225',
+                            paper: '#f8f4e8',
+                            ink: '#1a1a24',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+  
+</head>
+<body class="selection:bg-cyber-pink selection:text-white">
+
+    <!-- Sticky Top Navigation & Progress Bar -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-black/85 backdrop-blur-md border-b-2 border-cyber-cyan text-white px-4 py-2.5 flex items-center justify-between">
+        <!-- Brand / Title -->
+        <div class="flex items-center space-x-3">
+            <span class="bg-cyber-pink text-black font-bangers text-xl px-2.5 py-0.5 rounded -rotate-3 border border-white">NEON#01</span>
+            <h1 class="font-bungee text-sm md:text-lg tracking-wider text-cyber-cyan hidden sm:block">THE LAST SIGNAL</h1>
+        </div>
+
+        <!-- Scroll Progress Bar Container -->
+        <div class="flex-1 max-w-md mx-4 hidden md:block">
+            <div class="flex justify-between text-xs font-bangers text-cyber-yellow mb-1">
+                <span>COVER</span>
+                <span>CH 1</span>
+                <span>CH 2</span>
+                <span>CH 3</span>
+                <span>FINALE</span>
+            </div>
+            <div class="w-full bg-gray-800 h-3 rounded-full border border-cyber-pink p-0.5 relative overflow-hidden">
+                <div id="scrollProgressBar" class="bg-gradient-to-r from-cyber-cyan via-cyber-yellow to-cyber-pink h-full rounded-full transition-all duration-150 w-0"></div>
+            </div>
+        </div>
+
+        <!-- Controls (Audio & Theme Toggles) -->
+        <div class="flex items-center space-x-2 md:space-x-3">
+            <!-- Audio Sound Effects Toggle -->
+            <button id="sfxToggle" class="bg-cyber-card border-2 border-cyber-yellow hover:bg-cyber-yellow hover:text-black text-cyber-yellow px-3 py-1 rounded font-bangers text-sm flex items-center gap-1.5 transition">
+                <svg id="sfxIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                <span id="sfxLabel">SFX: ON</span>
+            </button>
+
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="bg-cyber-card border-2 border-cyber-pink hover:bg-cyber-pink hover:text-black text-cyber-pink px-3 py-1 rounded font-bangers text-sm transition">
+                <span>THEME: CYBER</span>
+            </button>
+
+            <!-- Quick Jump Drawer Button -->
+            <button id="menuToggle" class="bg-cyber-cyan text-black px-3 py-1 rounded font-bangers text-sm hover:scale-105 transition">
+                CHAPTERS ☰
+            </button>
+        </div>
+    </header>
+
+    <!-- Chapter Quick Navigation Overlay Drawer -->
+    <div id="chapterDrawer" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-cyber-card border-4 border-cyber-pink p-8 rounded-xl max-w-lg w-11/12 text-center relative shadow-2xl">
+            <button id="closeDrawer" class="absolute top-4 right-4 text-cyber-pink text-3xl font-bangers hover:text-white">&times;</button>
+            <h2 class="font-bangers text-4xl text-cyber-yellow mb-6">SELECT CHAPTER</h2>
+            <div class="space-y-4 font-bungee">
+                <button onclick="scrollToSection('coverSection')" class="w-full bg-black/60 hover:bg-cyber-pink hover:text-black text-cyber-cyan border-2 border-cyber-cyan py-3 px-4 rounded text-left flex justify-between items-center transition">
+                    <span>00. THE COVER</span> <span class="text-xs font-montserrat">TITLE & COVER</span>
+                </button>
+                <button onclick="scrollToSection('chap1Section')" class="w-full bg-black/60 hover:bg-cyber-pink hover:text-black text-cyber-cyan border-2 border-cyber-cyan py-3 px-4 rounded text-left flex justify-between items-center transition">
+                    <span>01. NEON ALLEYWAY</span> <span class="text-xs font-montserrat">THE ENCOUNTER</span>
+                </button>
+                <button onclick="scrollToSection('chap2Section')" class="w-full bg-black/60 hover:bg-cyber-pink hover:text-black text-cyber-cyan border-2 border-cyber-cyan py-3 px-4 rounded text-left flex justify-between items-center transition">
+                    <span>02. THE HIGHWAY CHASE</span> <span class="text-xs font-montserrat">SPEED & SPELLS</span>
+                </button>
+                <button onclick="scrollToSection('chap3Section')" class="w-full bg-black/60 hover:bg-cyber-pink hover:text-black text-cyber-cyan border-2 border-cyber-cyan py-3 px-4 rounded text-left flex justify-between items-center transition">
+                    <span>03. THE NEXUS SHOWDOWN</span> <span class="text-xs font-montserrat">CLIMAX & CHOICE</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lore Modal Inspector -->
+    <div id="loreModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-cyber-card border-4 border-cyber-cyan p-6 md:p-8 rounded-xl max-w-md w-11/12 relative shadow-2xl transform scale-90 transition-transform duration-300" id="loreModalContent">
+            <button id="closeLore" class="absolute top-2 right-4 text-cyber-pink text-3xl font-bangers hover:text-white">&times;</button>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-cyber-yellow text-black font-bangers text-sm px-2 py-0.5 rounded">DATABASE LORE</span>
+                <h3 id="loreTitle" class="font-bungee text-xl text-cyber-cyan">DATA NODE</h3>
+            </div>
+            <p id="loreText" class="text-gray-200 text-sm leading-relaxed font-montserrat mb-4"></p>
+            <div id="loreMeta" class="text-xs font-mono text-cyber-pink border-t border-gray-700 pt-3">STATUS: DECRYPTED</div>
+        </div>
+    </div>
+
+    <!-- MAIN PARALLAX SCROLL CONTAINER -->
+    <main id="parallaxContainer" class="parallax-wrapper pt-12">
+
+        <!-- COVER / HERO SECTION -->
+        <section id="coverSection" class="relative min-h-screen flex items-center justify-center overflow-hidden border-b-8 border-cyber-pink">
+            <!-- Parallax Layer 1: Far City Skyline -->
+            <div class="parallax-layer layer-deep opacity-40">
+                <svg class="w-full h-full object-cover" viewBox="0 0 1200 800" preserveAspectRatio="none">
+                    <rect width="1200" height="800" fill="#05050d"/>
+                    <!-- Synthwave Sun -->
+                    <circle cx="600" cy="400" r="220" fill="url(#sunGradient)"/>
+                    <defs>
+                        <linearGradient id="sunGradient" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#ffe600"/>
+                            <stop offset="50%" stop-color="#ff007f"/>
+                            <stop offset="100%" stop-color="#0a0a12"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Distant Buildings -->
+                    <path d="M0,800 L0,500 L60,500 L60,550 L120,550 L120,450 L200,450 L200,800 Z" fill="#120c24"/>
+                    <path d="M250,800 L250,380 L350,380 L350,480 L420,480 L420,800 Z" fill="#180e30"/>
+                    <path d="M780,800 L780,420 L880,420 L880,520 L960,520 L960,800 Z" fill="#120c24"/>
+                    <path d="M1000,800 L1000,480 L1100,480 L1100,800 Z" fill="#0c0718"/>
+                </svg>
+            </div>
+
+            <!-- Parallax Layer 2: Midground Neon Grid & Towers -->
+            <div class="parallax-layer layer-back opacity-80">
+                <div class="absolute inset-0 halftone-bg text-cyber-pink"></div>
+                <svg class="w-full h-full object-cover" viewBox="0 0 1200 800" preserveAspectRatio="none">
+                    <g fill="#161533" stroke="#00f0ff" stroke-width="1.5">
+                        <rect x="150" y="300" width="120" height="500"/>
+                        <rect x="320" y="220" width="160" height="580"/>
+                        <rect x="700" y="260" width="140" height="540"/>
+                        <rect x="880" y="340" width="130" height="460"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Parallax Layer 3: Title & Hero Banner (Base Level) -->
+            <div class="parallax-layer layer-base flex flex-col items-center justify-center p-6 text-center z-20">
+                <div class="inline-block bg-cyber-yellow text-black font-bangers text-xl px-4 py-1 rounded shadow-lg transform -rotate-2 mb-4 border-2 border-black">
+                    SPECIAL INTERACTIVE EDITION #001
+                </div>
+                
+                <h1 class="font-bungee text-5xl sm:text-7xl md:text-9xl text-transparent bg-clip-text bg-gradient-to-b from-white via-cyber-cyan to-cyber-pink filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.9)] tracking-tight leading-none mb-2">
+                    NEON<br/><span class="text-cyber-yellow">CHRONICLE</span>
+                </h1>
+
+                <p class="font-marker text-2xl md:text-4xl text-cyber-pink transform rotate-1 my-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    "THE LAST SIGNAL OF SECTOR 9"
+                </p>
+
+                <!-- Scroll Prompt CTA -->
+                <div class="mt-8 flex flex-col items-center animate-bounce cursor-pointer" onclick="scrollToSection('chap1Section')">
+                    <span class="font-bangers text-cyber-cyan text-xl tracking-widest mb-1">SCROLL DOWN TO READ</span>
+                    <svg class="w-8 h-8 text-cyber-yellow fill-current" viewBox="0 0 24 24">
+                        <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Parallax Layer 4: Foreground Hero Silhouette & Neon Sparks -->
+            <div class="parallax-layer layer-front pointer-events-none flex items-end justify-between px-10 pb-0 z-30">
+                <!-- Left Overlay Asset -->
+                <div class="w-32 md:w-64 opacity-80">
+                    <span class="action-word text-4xl text-cyber-yellow">WOOSH!</span>
+                </div>
+                <!-- Right Foreground Hologram Graphic -->
+                <div class="hidden sm:block text-right">
+                    <span class="bg-black/80 border-2 border-cyber-pink text-cyber-cyan font-mono text-xs p-2 rounded inline-block">
+                        SYSTEM OVERRIDE: 98%
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAPTER 1: THE ALLEYWAY ENCOUNTER -->
+        <section id="chap1Section" class="min-h-screen py-20 px-4 md:px-12 max-w-7xl mx-auto space-y-12 relative">
+            
+            <!-- Chapter Header Ribbon -->
+            <div class="reveal-element flex items-center gap-4 border-b-4 border-cyber-yellow pb-4">
+                <span class="bg-cyber-pink text-black font-bungee text-2xl px-4 py-1 border-2 border-black -rotate-2">CHAPTER 01</span>
+                <div>
+                    <h2 class="font-bangers text-3xl md:text-5xl text-cyber-cyan">THE ALLEYWAY ENCOUNTER</h2>
+                    <p class="text-xs md:text-sm font-mono text-gray-400">LOCATION: DOWNTOWN SECTOR 9 - 02:14 AM</p>
+                </div>
+            </div>
+
+            <!-- Multi-Panel Spread Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                
+                <!-- Panel 1: Establishing Shot (Wide 8 columns) -->
+                <div class="md:col-span-8 comic-panel h-80 md:h-96 relative rounded-lg cursor-pointer group" onclick="openLore('Sector 9 Slums', 'Once the vibrant heart of tech innovation, Sector 9 was abandoned after the Synth Collapse. Now it serves as a haven for rouge cyborgs and data smugglers.')">
+                    <div class="absolute inset-0 halftone-bg text-cyber-pink"></div>
+                    
+                    <!-- SVG Art: Cyberpunk Alleyway -->
+                    <svg class="w-full h-full object-cover" viewBox="0 0 800 400" preserveAspectRatio="none">
+                        <rect width="800" height="400" fill="#0d0d1a"/>
+                        <!-- Alley Walls -->
+                        <path d="M0,0 L200,100 L200,400 L0,400 Z" fill="#15152a" stroke="#00f0ff" stroke-width="2"/>
+                        <path d="M800,0 L600,100 L600,400 L800,400 Z" fill="#15152a" stroke="#00f0ff" stroke-width="2"/>
+                        <!-- Ground Grid -->
+                        <path d="M200,400 L350,220 L450,220 L600,400 Z" fill="#0a0a14"/>
+                        <line x1="400" y1="220" x2="400" y2="400" stroke="#ff007f" stroke-width="2"/>
+                        <line x1="300" y1="310" x2="500" y2="310" stroke="#ff007f" stroke-width="1.5"/>
+                        <!-- Neon Sign SVG -->
+                        <rect x="50" y="80" width="100" height="50" fill="#ff007f" rx="5" class="animate-pulse"/>
+                        <text x="60" y="112" font-family="Bangers" font-size="20" fill="#ffffff">BAR NEON</text>
+                    </svg>
+
+                    <!-- Caption Box Top Left -->
+                    <div class="absolute top-4 left-4 bg-cyber-yellow text-black font-bangers text-lg px-3 py-1 border-2 border-black shadow-md z-10">
+                        THE RAIN WAS COLD, BUT THE DATA WAS BURNING A HOLE IN MY DECK...
+                    </div>
+
+                    <!-- Interactive Inspect Indicator -->
+                    <div class="absolute bottom-3 right-3 bg-black/80 text-cyber-cyan font-mono text-xs px-2 py-1 border border-cyber-cyan rounded opacity-0 group-hover:opacity-100 transition">
+                        🔍 CLICK TO INSPECT LORE
+                    </div>
+                </div>
+
+                <!-- Panel 2: Character Intro (4 columns) -->
+                <div class="md:col-span-4 comic-panel h-80 md:h-96 relative rounded-lg flex flex-col justify-between p-4 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-cyber-card to-black"></div>
+                    
+                    <!-- Scroll Animated Character Avatar -->
+                    <div class="relative z-10 flex-1 flex items-center justify-center scroll-slide-right">
+                        <svg class="w-48 h-48 filter drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]" viewBox="0 0 200 200">
+                            <!-- Hero Helmet SVG -->
+                            <circle cx="100" cy="100" r="70" fill="#1e1e38" stroke="#00f0ff" stroke-width="4"/>
+                            <path d="M50,90 Q100,60 150,90 Q150,130 100,140 Q50,130 50,90 Z" fill="#00f0ff" opacity="0.8"/>
+                            <rect x="70" y="95" width="60" height="10" fill="#ffe600" rx="3" class="animate-pulse"/>
+                            <path d="M40,140 L160,140 L140,190 L60,190 Z" fill="#ff007f"/>
+                        </svg>
+                    </div>
+
+                    <!-- Speech Bubble -->
+                    <div class="relative z-20 speech-bubble scroll-pop">
+                        <p class="text-sm">"Someone's tracking my signal. I need to upload this core memory before they purge the sector!"</p>
+                    </div>
+                </div>
+
+                <!-- Panel 3: Dialogue Encounter (Full Width 12 columns) -->
+                <div class="md:col-span-12 comic-panel p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 rounded-lg">
+                    
+                    <!-- Left Character: VEX (Hero) -->
+                    <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left scroll-slide-left">
+                        <span class="bg-cyber-cyan text-black font-bungee text-xs px-2 py-0.5 rounded mb-2">VEX - ROGUE DECKER</span>
+                        <div class="speech-bubble mb-4 max-w-md">
+                            <p class="text-lg">"Show yourself! I know you've been tailing me since the mainframe breach!"</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Word Sound Effect -->
+                    <div class="my-2 md:my-0 text-center scroll-zoom">
+                        <span class="action-word text-6xl text-cyber-pink">BZZZZT!</span>
+                        <div class="text-xs font-mono text-cyber-yellow tracking-widest mt-1">HIGH VOLTAGE SURGE</div>
+                    </div>
+
+                    <!-- Right Character: CY-0N (Enforcer) -->
+                    <div class="flex-1 flex flex-col items-center md:items-end text-center md:text-right scroll-slide-right">
+                        <span class="bg-cyber-pink text-black font-bungee text-xs px-2 py-0.5 rounded mb-2">CY-0N - SECTOR ENFORCER</span>
+                        <div class="speech-bubble right mb-4 max-w-md bg-cyber-yellow">
+                            <p class="text-lg">"Hand over the Quantum Cipher, Vex. By order of the Syndicate!"</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CHAPTER 2: THE HIGHWAY CHASE -->
+        <section id="chap2Section" class="min-h-screen py-20 px-4 md:px-12 max-w-7xl mx-auto space-y-12 relative border-t-4 border-cyber-cyan">
+            
+            <!-- Chapter Header Ribbon -->
+            <div class="reveal-element flex items-center gap-4 border-b-4 border-cyber-pink pb-4">
+                <span class="bg-cyber-yellow text-black font-bungee text-2xl px-4 py-1 border-2 border-black rotate-1">CHAPTER 02</span>
+                <div>
+                    <h2 class="font-bangers text-3xl md:text-5xl text-cyber-pink">THE HIGHWAY CHASE</h2>
+                    <p class="text-xs md:text-sm font-mono text-gray-400">LOCATION: SKYLINE EXPRESSWAY - 120 MPH</p>
+                </div>
+            </div>
+
+            <!-- Parallax Speed Chase Panel -->
+            <div class="comic-panel h-[450px] relative rounded-xl overflow-hidden speed-lines flex items-center justify-center p-4">
+                
+                <!-- Background Moving Buildings -->
+                <div class="absolute inset-0 opacity-30 flex justify-between items-end px-10 pointer-events-none">
+                    <div class="w-24 h-80 bg-cyber-cyan rounded-t"></div>
+                    <div class="w-32 h-96 bg-cyber-pink rounded-t"></div>
+                    <div class="w-28 h-72 bg-cyber-yellow rounded-t"></div>
+                </div>
+
+                <!-- Hovering Hoverbike SVG -->
+                <div class="relative z-10 w-full max-w-2xl scroll-zoom flex flex-col items-center">
+                    <svg class="w-full h-56 filter drop-shadow-[0_10px_20px_rgba(255,0,127,0.7)]" viewBox="0 0 600 200">
+                        <!-- Bike Body -->
+                        <path d="M100,120 L250,70 L450,80 L520,130 L380,150 L200,150 Z" fill="#121225" stroke="#00f0ff" stroke-width="4"/>
+                        <!-- Thruster Flame -->
+                        <polygon points="50,110 100,120 70,140" fill="#ffe600" class="animate-ping"/>
+                        <polygon points="20,115 100,120 50,135" fill="#ff007f"/>
+                        <!-- Rider Silhouette -->
+                        <circle cx="300" cy="50" r="25" fill="#00f0ff"/>
+                        <path d="M280,70 L340,70 L360,110 L300,110 Z" fill="#ff007f"/>
+                    </svg>
+
+                    <!-- Dynamic Floating Sound Word -->
+                    <div class="absolute -top-6 right-12 transform rotate-12">
+                        <span class="action-word text-5xl md:text-7xl text-cyber-yellow">VROOOOOOM!</span>
+                    </div>
+
+                    <div class="speech-bubble bg-white text-black font-bangers text-xl mt-4 max-w-md text-center">
+                        "If I can reach the Orbital Relay Tower before his drones lock on, the signal goes live worldwide!"
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Grid of Chase Sub-Panels -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Sub Panel A -->
+                <div class="comic-panel p-6 rounded-lg flex items-center gap-4 scroll-slide-left cursor-pointer" onclick="openLore('Syndicate Drone Mark IV', 'Autonomous hunter-killer units equipped with electromagnetic pulse cannons and thermal tracking.')">
+                    <div class="w-24 h-24 bg-black border-2 border-cyber-pink rounded flex-shrink-0 flex items-center justify-center">
+                        <span class="text-4xl animate-bounce">🛸</span>
+                    </div>
+                    <div>
+                        <span class="text-cyber-pink font-bungee text-xs">WARNING: PURSUIT DRONES CLOSING IN</span>
+                        <h4 class="font-bangers text-2xl text-white">LOCK-ON DETECTED</h4>
+                        <p class="text-xs text-gray-300 font-montserrat mt-1">Hostile units deploying EMP nets across all lanes.</p>
+                    </div>
+                </div>
+
+                <!-- Sub Panel B -->
+                <div class="comic-panel p-6 rounded-lg flex items-center gap-4 scroll-slide-right cursor-pointer" onclick="openLore('Overdrive Booster', 'Experimental cybernetic implant that temporarily boosts reaction times by 400%, at the cost of intense neural strain.')">
+                    <div class="w-24 h-24 bg-black border-2 border-cyber-yellow rounded flex-shrink-0 flex items-center justify-center">
+                        <span class="text-4xl animate-pulse">⚡</span>
+                    </div>
+                    <div>
+                        <span class="text-cyber-yellow font-bungee text-xs">ABILITY AVAILABLE</span>
+                        <h4 class="font-bangers text-2xl text-white">OVERDRIVE ENGAGED</h4>
+                        <p class="text-xs text-gray-300 font-montserrat mt-1">Rerouting secondary battery power directly to thrusters!</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- CHAPTER 3: THE NEXUS SHOWDOWN -->
+        <section id="chap3Section" class="min-h-screen py-20 px-4 md:px-12 max-w-7xl mx-auto space-y-12 relative border-t-4 border-cyber-yellow">
+            
+            <!-- Chapter Header Ribbon -->
+            <div class="reveal-element flex items-center gap-4 border-b-4 border-cyber-cyan pb-4">
+                <span class="bg-cyber-cyan text-black font-bungee text-2xl px-4 py-1 border-2 border-black -rotate-1">CHAPTER 03</span>
+                <div>
+                    <h2 class="font-bangers text-3xl md:text-5xl text-cyber-yellow">THE NEXUS SHOWDOWN</h2>
+                    <p class="text-xs md:text-sm font-mono text-gray-400">LOCATION: ORBITAL RELAY TOWER ROOFTOP</p>
+                </div>
+            </div>
+
+            <!-- Climax Big Spread Panel -->
+            <div class="comic-panel min-h-[500px] p-6 md:p-10 rounded-xl relative flex flex-col justify-between neon-glow-pink">
+                
+                <div class="flex justify-between items-start z-10">
+                    <div class="bg-black/80 border-2 border-cyber-pink p-3 rounded max-w-xs">
+                        <span class="text-cyber-pink font-bungee text-xs">FINAL TERMINAL</span>
+                        <p class="font-bangers text-xl text-white">THE TRANSMITTER IS READY. ONE CLICK TRANSMITS THE TRUTH.</p>
+                    </div>
+                    <span class="action-word text-6xl text-cyber-cyan hidden sm:block">KABOOM!</span>
+                </div>
+
+                <!-- Central Confrontation Visual -->
+                <div class="my-8 text-center scroll-zoom z-10">
+                    <div class="inline-block relative">
+                        <span class="font-bungee text-3xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-cyber-yellow via-white to-cyber-pink filter drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]">
+                            CHOOSE VEX'S DESTINY
+                        </span>
+                    </div>
+                    <p class="font-montserrat text-sm text-gray-300 mt-2 max-w-xl mx-auto">
+                        Cy-On stands battered at the threshold. The signal transmitter is 100% charged. Your choice determines the outcome of Sector 9!
+                    </p>
+                </div>
+
+                <!-- Interactive Choice Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 z-10">
+                    
+                    <button onclick="makeChoice('broadcast')" class="bg-gradient-to-r from-cyber-cyan to-blue-600 hover:from-white hover:to-cyber-cyan text-black font-bangers text-2xl p-5 rounded-lg border-4 border-black shadow-lg transform hover:-translate-y-1 transition text-left flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bungee block text-black/70">OPTION A</span>
+                            1. BROADCAST THE SIGNAL TO THE WORLD
+                        </div>
+                        <span class="text-xs font-montserrat mt-2 text-black/80">Expose Syndicate corruption, but reveal your own location forever.</span>
+                    </button>
+
+                    <button onclick="makeChoice('purge')" class="bg-gradient-to-r from-cyber-pink to-purple-600 hover:from-white hover:to-cyber-pink text-white hover:text-black font-bangers text-2xl p-5 rounded-lg border-4 border-black shadow-lg transform hover:-translate-y-1 transition text-left flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bungee block text-yellow-300">OPTION B</span>
+                            2. PURGE THE NETWORK & ESCAPE
+                        </div>
+                        <span class="text-xs font-montserrat mt-2 opacity-90">Destroy the data mainframe to protect yourself and disappear into shadows.</span>
+                    </button>
+
+                </div>
+
+                <!-- Result Message Display Box -->
+                <div id="choiceResult" class="hidden mt-6 p-6 bg-black/90 border-4 border-cyber-yellow rounded-lg text-center z-20 animate-fade-in">
+                    <h3 id="choiceTitle" class="font-bungee text-2xl text-cyber-yellow mb-2"></h3>
+                    <p id="choiceDesc" class="font-montserrat text-sm text-gray-200 leading-relaxed max-w-2xl mx-auto"></p>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- EPILOGUE & TO BE CONTINUED -->
+        <section id="epilogueSection" class="py-20 px-4 md:px-12 max-w-5xl mx-auto text-center space-y-8">
+            <div class="comic-panel p-8 md:p-12 rounded-xl bg-gradient-to-b from-cyber-card via-black to-black border-4 border-cyber-pink shadow-2xl">
+                <span class="bg-cyber-yellow text-black font-bangers text-xl px-4 py-1 rounded inline-block -rotate-2 mb-4">
+                    NEON CHRONICLE #001 END
+                </span>
+
+                <h2 class="font-bungee text-4xl md:text-7xl text-cyber-cyan mb-4 tracking-wider">
+                    TO BE CONTINUED...
+                </h2>
+
+                <p class="font-marker text-xl md:text-2xl text-cyber-pink mb-8">
+                    "THE SIGNAL IS NOW BURNING THROUGH THE CYBERSPACE LINES."
+                </p>
+
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="scrollToSection('coverSection')" class="bg-cyber-pink text-black font-bangers text-xl px-6 py-3 rounded-lg border-2 border-white hover:bg-white transition">
+                        🔄 REREAD FROM COVER
+                    </button>
+                    <button onclick="triggerSound('zap')" class="bg-cyber-card text-cyber-cyan border-2 border-cyber-cyan font-bangers text-xl px-6 py-3 rounded-lg hover:bg-cyber-cyan hover:text-black transition">
+                        ⚡ PLAY SOUND IMPACT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Credits Footer -->
+            <footer class="text-xs font-mono text-gray-500 pt-8 border-t border-gray-800">
+                <p>NEON CHRONICLE — INTERACTIVE PARALLAX SCROLL EXPERIENCES</p>
+                <p class="mt-1">POWERED BY PURE CSS 3D PERSPECTIVE & SCROLL ANIMATIONS</p>
+            </footer>
+        </section>
+
+    </main>
+
+  
+    <script src="script.js"></script>
+</body>
+</html>
